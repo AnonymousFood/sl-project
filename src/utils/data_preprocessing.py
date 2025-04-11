@@ -41,4 +41,5 @@ def preprocess_data(df): # clean the data!
                'RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck',
                'Deck', 'Num', 'Side']
     
+    print(df[features])
     return df[features]
