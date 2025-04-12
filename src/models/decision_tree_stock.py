@@ -36,7 +36,7 @@ def train_decision_tree(train_data_path): # Training part
     y_pred = dt_classifier.predict(X_val)
     
     # Print performance
-    print("\nDecision Tree Model Performance:")
+    print("\nStock/CART Decision Tree Model Performance:")
     print("Accuracy:", accuracy_score(y_val, y_pred))
     print("\nClassification Report:")
     print(classification_report(y_val, y_pred))

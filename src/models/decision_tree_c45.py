@@ -179,7 +179,7 @@ def train_decision_tree(train_data_path):
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
     
     # Initialize and train model
-    dt_classifier = C45DecisionTree(max_depth=10, min_samples_split=5)
+    dt_classifier = C45DecisionTree(max_depth=4, min_samples_split=5)
     dt_classifier.fit(X_train, y_train)
     
     # Make predictions on validation set
