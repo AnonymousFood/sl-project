@@ -5,6 +5,7 @@ from utils.evaluation import save_tree_visualization
 from graphviz import Digraph
 from sklearn import tree
 import os
+import models.naive_bayes as nb
 
 # File paths
 train_path = "train.csv"  
@@ -30,3 +31,6 @@ submission_df3 = c45.predict(c45_model, test_path)
 # Save predictions
 submission_df.to_csv("decision_tree_predictions.csv", index=False)
 print("\nPredictions saved to 'decision_tree_predictions.csv'")
+
+# Run Naive Bayes Predictions - False means no graphing
+NB = nb.NaiveBayes(train_path, test_path, True)
