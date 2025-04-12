@@ -69,8 +69,8 @@ class NaiveBayes:
             vis.attribute_bar_compare(attributes, means_arr, "Mean")
             var_arr = np.array([list(m.values()) for m in y_attribute_variances.values()])
             vis.attribute_bar_compare(attributes, var_arr, "Variance")
-            probs_arr = np.array([list(m.values()) for m in y_attribute_probs.values()])
-            vis.attribute_bar_compare(attributes, probs_arr, "Probability")
+            # probs_arr = np.array([list(m.values()) for m in y_attribute_probs.values()])
+            # vis.attribute_bar_compare(attributes, probs_arr, "Probability")
             
             # Heatmap
             vis.visualize_heatmap(y_attribute_means, "Mean")

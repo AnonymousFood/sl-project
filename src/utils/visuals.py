@@ -29,13 +29,13 @@ def cm(y_true, y_pred, title):
     plt.title('Confusion Matrix' + title)
     plt.show()
     
-# Feature Importance Bar Chart Comparison
+# Attribute Importance Bar Chart Comparison
 # value_comparing is expected to be a 2D array : [label][attribute]
-def feature_bar_compare(attributes, value_comparing, value_being_compared_str):
+def attribute_bar_compare(attributes, value_comparing, value_being_compared_str):
     # Plotting the means for each class
     fig, ax = plt.subplots(figsize=(8, 6))
     width = 0.35  # Bar width
-    x = np.arange(len(attributes))  # Feature positions
+    x = np.arange(len(attributes))  # Attribute positions
 
     ax.bar(x - width/2, value_comparing[0], width, label='Not Transported')
     ax.bar(x + width/2, value_comparing[1], width, label='Transported')

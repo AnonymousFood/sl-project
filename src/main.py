@@ -33,4 +33,4 @@ submission_df.to_csv("decision_tree_predictions.csv", index=False)
 print("\nPredictions saved to 'decision_tree_predictions.csv'")
 
 # Run Naive Bayes Predictions - False means no graphing
-NB = nb.NaiveBayes(train_path, test_path, True)
+NB = nb.NaiveBayes(train_path, test_path, False)
