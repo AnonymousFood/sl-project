@@ -37,8 +37,19 @@ def attribute_bar_compare(attributes, value_comparing, value_being_compared_str)
     width = 0.35  # Bar width
     x = np.arange(len(attributes))  # Attribute positions
 
-    ax.bar(x - width/2, value_comparing[0], width, label='Not Transported')
-    ax.bar(x + width/2, value_comparing[1], width, label='Transported')
+    bars1 = ax.bar(x - width/2, value_comparing[0], width, label='Not Transported')
+    bars2 =ax.bar(x + width/2, value_comparing[1], width, label='Transported')
+    
+    # Adding text annotations above the bars
+    for bar in bars1:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2, height, f'{height:.2f}', 
+                ha='center', va='bottom', fontsize=10)  # Displaying value for 'Not Transported'
+
+    for bar in bars2:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2, height, f'{height:.2f}', 
+                ha='center', va='bottom', fontsize=10)  # Displaying value for 'Transported'
 
     ax.set_xlabel('Attributes')
     ax.set_ylabel(f'{value_being_compared_str} Value')
@@ -53,16 +64,18 @@ def visualize_heatmap(value_comparing, value_being_compared_str):
     # Convert y_attribute_probs to a DataFrame for easy visualization
     data = {}
     for label, attribute_probs in value_comparing.items():
+        c_label = 'Not Transported' if label == 0 else 'Transported'
         for attribute, probs in attribute_probs.items():
             if attribute not in data:
                 data[attribute] = {}
-            data[attribute][f'Class_{label}'] = probs
+            
+            data[attribute][c_label] = probs
 
     df = pd.DataFrame(data)
     
     # Plot the heatmap
     plt.figure(figsize=(12, 8))
-    sns.heatmap(df, annot=True, cmap='Blues', fmt='.2f', cbar=True)
+    sns.heatmap(df, annot=False, cmap='Reds', fmt='.2f', cbar=True, annot_kws={"size": 8})
     plt.title(f'Conditional Probability Distribution for {value_being_compared_str} of Attributes by Class')
     plt.ylabel('Attributes')
     plt.xlabel('Classes')
