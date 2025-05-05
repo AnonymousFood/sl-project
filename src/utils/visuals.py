@@ -80,3 +80,60 @@ def visualize_heatmap(value_comparing, value_being_compared_str):
     plt.ylabel('Attributes')
     plt.xlabel('Classes')
     plt.show()
+    
+def visualize_feature_influence(y_attribute_probs, attributes, classes):
+    # Create a plot for each class to show feature influence
+    fig, axes = plt.subplots(nrows=1, ncols=len(classes), figsize=(15, 6))
+    
+    for i, class_label in enumerate(classes):
+        c_label = 'Not Transported' if class_label == 0 else 'Transported'
+        axes[i].set_title(f'Class: {c_label}')
+        axes[i].set_ylabel('Feature Influence')
+        feature_influence = []
+        
+        # Calculate the product of probabilities for each feature for this class
+        for feature in y_attribute_probs[class_label]:
+            feature_probs = y_attribute_probs[class_label].get(feature, {})
+            influence = 1
+            for feature_value, prob in feature_probs.items():
+                influence *= prob
+            feature_influence.append(influence)
+        
+        axes[i].bar(attributes, feature_influence, color='skyblue')
+        axes[i].set_xticklabels(attributes, rotation=45)
+    
+    plt.tight_layout()
+    plt.show()
+    
+def visualize_stacked_feature_contributions(y_attribute_probs, features, classes):
+    print(y_attribute_probs)
+    
+    # Prepare the data for the stacked bar chart
+    fcs = {}
+    
+    for class_label in classes:
+        feature_contributions = {feature: [] for feature in features}
+        for feature in features:
+            feature_probs = y_attribute_probs[class_label].get(feature, {})
+            contribution = 1  # Initialize the product
+            for feature_value, prob in feature_probs.items():
+                contribution *= prob
+            feature_contributions[feature].append(contribution)
+        fcs[class_label] = feature_contributions
+    
+    # Create a stacked bar chart
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Plot the stacked bars
+    bottom_values = np.zeros(len(features))
+    for i, class_label in enumerate(classes):
+        c_label = 'Not Transported' if class_label == 0 else 'Transported'
+        ax.bar(features, fcs[class_label][feature], label=f'Class {c_label}', bottom=bottom_values)
+        bottom_values += fcs[class_label][feature]  # Stack the contributions
+
+    ax.set_xlabel('Features')
+    ax.set_ylabel('Feature Contribution to Classification')
+    ax.set_title('Stacked Feature Contributions by Class')
+    ax.legend()
+
+    plt.show()

@@ -45,24 +45,34 @@ class NaiveBayes:
         print("\nClassification Report:")
         print(classification_report(y_test, y_pred_product))
         
-        # Make predictions with product - Gaussian Naive Bayes
-        y_pred_gaussian = self.predict_Gaussian(x_test, y_probs, y_attribute_means, y_attribute_variances, attributes, labels)
+        # Make predictions with Natural Log - Gaussian Naive Bayes
+        y_pred_gaussian_ln = self.predict_Gaussian_ln(x_test, y_probs, y_attribute_means, y_attribute_variances, attributes, labels)
+        # Print performance
+        print("\nNaive Bayes Gaussian Natural Log Performance:")
+        print("Accuracy:", accuracy_score(y_test, y_pred_gaussian_ln))
+        print("\nClassification Report:")
+        print(classification_report(y_test, y_pred_gaussian_ln))
+        
+        # Make predictions with Product - Gaussian Naive Bayes
+        y_pred_gaussian_prod = self.predict_Gaussian_product(x_test, y_probs, y_attribute_means, y_attribute_variances, attributes, labels)
         # Print performance
         print("\nNaive Bayes Gaussian Product Performance:")
-        print("Accuracy:", accuracy_score(y_test, y_pred_gaussian))
+        print("Accuracy:", accuracy_score(y_test, y_pred_gaussian_prod))
         print("\nClassification Report:")
-        print(classification_report(y_test, y_pred_gaussian))
+        print(classification_report(y_test, y_pred_gaussian_prod))
         
         if (graph):
             # Visualize - ROC
-            vis.roc(y_test, y_pred_ln, " Naive Bayes - ln")
-            vis.roc(y_test, y_pred_product, " Naive Bayes - Product")
-            vis.roc(y_test, y_pred_gaussian, " Naive Bayes - Gaussian")
+            vis.roc(y_test, y_pred_ln, " Naive Bayes - ln - Multinomial")
+            # vis.roc(y_test, y_pred_product, " Naive Bayes - Product")
+            vis.roc(y_test, y_pred_gaussian_ln, " Naive Bayes -ln - Gaussian")
+            # vis.roc(y_test, y_pred_gaussian_prod, " Naive Bayes - Gaussian Product")
             
             # Visualize - Confusion Matrix
-            vis.cm(y_test, y_pred_ln, " Naive Bayes - ln")
-            vis.cm(y_test, y_pred_product, " Naive Bayes - Product")
-            vis.cm(y_test, y_pred_gaussian, " Naive Bayes - Gaussian")
+            vis.cm(y_test, y_pred_ln, " Naive Bayes - ln - Multinomial")
+            # vis.cm(y_test, y_pred_product, " Naive Bayes - Product")
+            vis.cm(y_test, y_pred_gaussian_ln, " Naive Bayes - ln - Gaussian")
+            # vis.cm(y_test, y_pred_gaussian_prod, " Naive Bayes - Gaussian - Product")
             
             # Gaussian Means of attributes
             means_arr = np.array([list(m.values()) for m in y_attribute_means.values()])
@@ -74,7 +84,9 @@ class NaiveBayes:
             
             # Heatmap
             vis.visualize_heatmap(y_attribute_means, "Mean")
-        
+            vis.visualize_heatmap(y_attribute_variances, "Variance")
+        # vis.visualize_feature_influence(y_attribute_probs, attributes, labels)
+        # vis.visualize_stacked_feature_contributions(y_attribute_probs, attributes, labels)
         
     def get_probs_direct(self, x: pd.DataFrame, y: pd.DataFrame, attributes, labels):
         y_probs = {} # Pr(y)
@@ -132,7 +144,7 @@ class NaiveBayes:
     # Pr(Ai = ai | yj) = 1/sqrt(2*pi*variance_ij) exp(-(1i-mean_ij)^2 / (2 * variance))
     # mean_ij = 1/m_j * sum(a_ik)
     # variance_ij = i/(m_j - 1) * sum((a_ik - mean_ij)^2)
-    def predict_Gaussian(self, xs: pd.DataFrame, y_probs:dict, y_attribute_means:dict, y_attribute_variances:dict, attributes, labels):
+    def predict_Gaussian_product(self, xs: pd.DataFrame, y_probs:dict, y_attribute_means:dict, y_attribute_variances:dict, attributes, labels):
         predictions = []
         for _, x in xs.iterrows():
             probs = {}
@@ -144,6 +156,25 @@ class NaiveBayes:
                     mean = y_attribute_means[l][a]
                     # If attribute doesn't exist use 1e-6
                     prob *= (1/ np.sqrt(2 * np.pi * var)) * np.exp(-(x_a - mean)**2 / (2 * var))
+                probs[l] = prob
+            predictions.append(max(probs, key=probs.get))
+        return predictions
+    
+    # Pr(Ai = ai | yj) = 1/sqrt(2*pi*variance_ij) exp(-(1i-mean_ij)^2 / (2 * variance))
+    # mean_ij = 1/m_j * sum(a_ik)
+    # variance_ij = i/(m_j - 1) * sum((a_ik - mean_ij)^2)
+    def predict_Gaussian_ln(self, xs: pd.DataFrame, y_probs:dict, y_attribute_means:dict, y_attribute_variances:dict, attributes, labels):
+        predictions = []
+        for _, x in xs.iterrows():
+            probs = {}
+            for l in labels:
+                prob = np.log(y_probs[l]) # lnPr(y)
+                for a in attributes: # sum(ln(Pr(Ai = ai | y))
+                    x_a = x[a]
+                    var = y_attribute_variances[l][a]
+                    mean = y_attribute_means[l][a]
+                    temp = (1/ np.sqrt(2 * np.pi * var)) * np.exp(-(x_a - mean)**2 / (2 * var))
+                    prob += np.log(temp)
                 probs[l] = prob
             predictions.append(max(probs, key=probs.get))
         return predictions
