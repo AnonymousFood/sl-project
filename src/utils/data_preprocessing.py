@@ -5,6 +5,10 @@ def preprocess_data(df): # clean the data!
 
     # Create copy to avoid modifying original data
     df = df.copy()
+
+    df['TotalSpent'] = df['RoomService'] + df['FoodCourt'] + \
+                       df['ShoppingMall'] + df['Spa'] + df['VRDeck']
+    df['HasSpent'] = (df['TotalSpent'] > 0).astype(int)
     
     # Convert boolean values to strings for categorical encoding
     bool_cols = ['CryoSleep', 'VIP']
@@ -14,7 +18,7 @@ def preprocess_data(df): # clean the data!
     
     # Handle categorical variables
     le = LabelEncoder()
-    categorical_cols = ['HomePlanet', 'CryoSleep', 'Destination', 'VIP']
+    categorical_cols = ['HomePlanet', 'CryoSleep', 'Destination', 'VIP', 'HasSpent']
     
     for col in categorical_cols:
         df[col] = df[col].fillna(df[col].mode()[0])
@@ -32,13 +36,13 @@ def preprocess_data(df): # clean the data!
     df['Side'] = le.fit_transform(df['Side'])
     
     # Handle numerical variables
-    numerical_cols = ['Age', 'RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck', 'Num']
+    numerical_cols = ['Age', 'RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck', 'Num', 'TotalSpent']
     imputer = SimpleImputer(strategy='median')
     df[numerical_cols] = imputer.fit_transform(df[numerical_cols])
     
     # Select features for model
     features = ['HomePlanet', 'CryoSleep', 'Destination', 'Age', 'VIP',
                'RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck',
-               'Deck', 'Num', 'Side']
+               'Deck', 'Num', 'Side', 'HasSpent', 'TotalSpent']
     
     return df[features]

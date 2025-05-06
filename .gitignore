@@ -1,0 +1,8 @@
+src/models/__pycache__/decision_tree_c45.cpython-312.pyc
+src/models/__pycache__/decision_tree_id3.cpython-312.pyc
+src/models/__pycache__/decision_tree_stock.cpython-312.pyc
+src/models/__pycache__/naive_bayes.cpython-312.pyc
+src/models/__pycache__/random_forest.cpython-312.pyc
+src/utils/__pycache__/data_preprocessing.cpython-312.pyc
+src/utils/__pycache__/evaluation.cpython-312.pyc
+src/utils/__pycache__/visuals.cpython-312.pyc

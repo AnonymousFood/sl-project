@@ -155,10 +155,10 @@ def predict(model, test_data_path): # testing part
     # Make predictions
     predictions = model.predict(X_test)
     
-    # Create submission dataframe
-    submission_df = pd.DataFrame({
+    # Store passenger IDs mapped to predictions
+    prediction_df = pd.DataFrame({
         'PassengerId': passenger_ids,
         'Transported': pd.Series(predictions).astype(bool)
     })
     
-    return submission_df
+    return prediction_df

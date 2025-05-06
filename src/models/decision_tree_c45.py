@@ -18,7 +18,7 @@ class Node:
         self.branches = {}  # dictionary to store child nodes
 
 class C45DecisionTree:
-    def __init__(self, max_depth=None, min_samples_split=2):
+    def __init__(self, max_depth=None, min_samples_split=5):
         self.root = None
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
@@ -179,7 +179,7 @@ def train_decision_tree(train_data_path):
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
     
     # Initialize and train model
-    dt_classifier = C45DecisionTree(max_depth=4, min_samples_split=5)
+    dt_classifier = C45DecisionTree(max_depth=8, min_samples_split=5)
     dt_classifier.fit(X_train, y_train)
     
     # Make predictions on validation set
@@ -189,7 +189,7 @@ def train_decision_tree(train_data_path):
     print("\nC4.5 Decision Tree Model Performance:")
     print("Accuracy:", accuracy_score(y_val, y_pred))
     print("\nClassification Report:")
-    print(classification_report(y_val, y_pred))
+    print(classification_report(y_val, y_pred, digits=4))
     
     return dt_classifier
 
@@ -204,10 +204,10 @@ def predict(model, test_data_path):
     # Make predictions
     predictions = model.predict(X_test)
     
-    # Create submission dataframe
-    submission_df = pd.DataFrame({
+    # Store passenger IDs mapped to predictions
+    prediction_df = pd.DataFrame({
         'PassengerId': passenger_ids,
         'Transported': pd.Series(predictions).astype(bool)
     })
     
-    return submission_df
+    return prediction_df
