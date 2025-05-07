@@ -40,7 +40,7 @@ def create_direct_confusion_matrix_grid(confusion_matrices, output_path='direct_
     row_titles = ["Mistake Identification", "Actionability"]
     
     # Model names for columns
-    model_titles = ["Encoder\n(BERT)", "Encoder-Decoder\n(T5)", "Decoder\n(GPT-2)"]
+    model_titles = ["Encoder\n(BERT)", "Encoder-Decoder\n(T5)", "Random\nForest"]
     
     # Plot confusion matrices
     for i, row_title in enumerate(row_titles):
@@ -73,7 +73,7 @@ def create_direct_confusion_matrix_grid(confusion_matrices, output_path='direct_
 if __name__ == "__main__":
     cm_mistake_identification_encoder = np.array([[51, 31], [9, 405]])
     cm_mistake_identification_encoder_decoder = np.array([[38, 36], [12, 410]])
-    cm_mistake_identification_decoder = np.array([[27, 47], [118, 304]])
+    cm_mistake_identification_decoder = np.array([[713, 148], [292, 586]])
     
     cm_actionability_encoder = np.array([[111, 52], [29, 304]])
     cm_actionability_encoder_decoder = np.array([[86, 74], [41, 295]])

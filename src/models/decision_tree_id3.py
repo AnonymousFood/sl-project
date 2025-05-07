@@ -140,7 +140,7 @@ def train_decision_tree(train_data_path): # training part
     print("\nID3 Decision Tree Model Performance:")
     print("Accuracy:", accuracy_score(y_val, y_pred))
     print("\nClassification Report:")
-    print(classification_report(y_val, y_pred))
+    print(classification_report(y_val, y_pred, digits=4))
     
     return dt_classifier
 

@@ -18,20 +18,39 @@ class Node:
         self.branches = {}  # dictionary to store child nodes
 
 class C45DecisionTree:
-    def __init__(self, max_depth=None, min_samples_split=5):
+    def __init__(self, max_depth=None, min_samples_split=5, class_weight=None):
         self.root = None
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
-        self.numerical_features = ['Age', 'RoomService', 'FoodCourt', 
-                                 'ShoppingMall', 'Spa', 'VRDeck', 'Num']
+        self.numerical_features = ['Age', 'RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck', 'Num', 'TotalSpent']
+        self.class_weight = class_weight
+        self.class_weights = None
         
     def calculate_entropy(self, y):
         counts = Counter(y)
         entropy = 0
         total = len(y)
-        for count in counts.values():
-            prob = count / total
+        
+        # Initialize class_weights if not already done
+        if self.class_weights is None:
+            if self.class_weight == 'balanced':
+                n_samples = len(y)
+                self.class_weights = {cls: n_samples / (len(counts) * count) 
+                                    for cls, count in counts.items()}
+            elif isinstance(self.class_weight, dict):
+                self.class_weights = self.class_weight
+            else:
+                self.class_weights = {cls: 1.0 for cls in set(y)}
+        
+        # Apply class weights to probability calculation
+        weighted_counts = {cls: count * self.class_weights.get(cls, 1.0) 
+                          for cls, count in counts.items()}
+        weighted_total = sum(weighted_counts.values())
+        
+        for cls, weighted_count in weighted_counts.items():
+            prob = weighted_count / weighted_total if weighted_total > 0 else 0
             entropy -= prob * np.log2(prob) if prob > 0 else 0
+            
         return entropy
 
     def calculate_split_info(self, X, attribute, threshold=None):
@@ -117,7 +136,8 @@ class C45DecisionTree:
         remaining_attributes = [attr for attr in attributes if attr != best_attribute]
 
         if best_attribute in self.numerical_features:
-            # Binary split for numerical attributes
+            # Binary split for numerical attributes based on threshold
+            # Should probably also have multiple thresholds
             mask = X[best_attribute] <= threshold
             left_mask = mask
             right_mask = ~mask
@@ -141,6 +161,19 @@ class C45DecisionTree:
     def fit(self, X, y):
         X = pd.DataFrame(X) if isinstance(X, np.ndarray) else X
         y = pd.Series(y) if isinstance(y, np.ndarray) else y
+        
+        # Process class weights
+        if self.class_weight == 'balanced':
+            # Calculate balanced weights
+            class_counts = Counter(y)
+            n_samples = len(y)
+            self.class_weights = {cls: n_samples / (len(class_counts) * count) 
+                                 for cls, count in class_counts.items()}
+        elif isinstance(self.class_weight, dict):
+            self.class_weights = self.class_weight
+        else:
+            self.class_weights = {cls: 1.0 for cls in set(y)}  # Default equal weights
+            
         attributes = list(X.columns)
         self.root = self.c45(X, y, attributes)
         return self
@@ -179,7 +212,7 @@ def train_decision_tree(train_data_path):
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
     
     # Initialize and train model
-    dt_classifier = C45DecisionTree(max_depth=8, min_samples_split=5)
+    dt_classifier = C45DecisionTree(max_depth=4, min_samples_split=5)
     dt_classifier.fit(X_train, y_train)
     
     # Make predictions on validation set
