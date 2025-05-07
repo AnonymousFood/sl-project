@@ -41,3 +41,7 @@ print("\nPredictions saved to 'decision_tree_predictions.csv' and 'random_forest
 
 # Run Naive Bayes Predictions - False means no graphing
 # NB = nb.NaiveBayes(train_path, test_path, False)
+
+# Run K-Nearest Neighbors Predictions - False means no graphing
+# knn_7 = kn.KNearestNeighbors(train_path, test_path, 7, True, 0)
+

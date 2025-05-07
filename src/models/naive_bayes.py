@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, roc_auc_score
 import utils.data_preprocessing as dp
 import utils.visuals as vis
 
@@ -34,32 +34,36 @@ class NaiveBayes:
         # Print performance
         print("\nNaive Bayes Log Performance:")
         print("Accuracy:", accuracy_score(y_test, y_pred_ln))
-        print("\nClassification Report:")
+        print("Classification Report:")
         print(classification_report(y_test, y_pred_ln))
+        print("AUC:", roc_auc_score(y_test, y_pred_ln))
         
         # Make predictions with product Naive Bayes
         y_pred_product = self.predict_product(x_test, y_probs, y_attribute_probs, attributes, labels)
         # Print performance
         print("\nNaive Bayes Product Performance:")
         print("Accuracy:", accuracy_score(y_test, y_pred_product))
-        print("\nClassification Report:")
+        print("Classification Report:")
         print(classification_report(y_test, y_pred_product))
+        print("AUC:", roc_auc_score(y_test, y_pred_product))
         
         # Make predictions with Natural Log - Gaussian Naive Bayes
         y_pred_gaussian_ln = self.predict_Gaussian_ln(x_test, y_probs, y_attribute_means, y_attribute_variances, attributes, labels)
         # Print performance
         print("\nNaive Bayes Gaussian Natural Log Performance:")
         print("Accuracy:", accuracy_score(y_test, y_pred_gaussian_ln))
-        print("\nClassification Report:")
+        print("Classification Report:")
         print(classification_report(y_test, y_pred_gaussian_ln))
+        print("AUC:", roc_auc_score(y_test, y_pred_gaussian_ln))
         
         # Make predictions with Product - Gaussian Naive Bayes
         y_pred_gaussian_prod = self.predict_Gaussian_product(x_test, y_probs, y_attribute_means, y_attribute_variances, attributes, labels)
         # Print performance
         print("\nNaive Bayes Gaussian Product Performance:")
         print("Accuracy:", accuracy_score(y_test, y_pred_gaussian_prod))
-        print("\nClassification Report:")
+        print("Classification Report:")
         print(classification_report(y_test, y_pred_gaussian_prod))
+        print("AUC:", roc_auc_score(y_test, y_pred_gaussian_prod))
         
         if (graph):
             # Visualize - ROC

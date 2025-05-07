@@ -1,4 +1,4 @@
-from graphviz import Digraph
+# from graphviz import Digraph
 import matplotlib.pyplot as plt
 from sklearn import tree
 import os
