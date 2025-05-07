@@ -18,6 +18,24 @@ def roc(y_true, y_pred, title):
     plt.legend(loc='lower right')
     plt.show()
     
+# roc - set
+def roc_compare(y_true, y_pred_list, model_names, title):
+    plt.figure()
+    
+    for y_pred, model_name in zip(y_pred_list, model_names):
+        fpr, tpr, _ = roc_curve(y_true, y_pred)
+        roc_auc = auc(fpr, tpr)
+        plt.plot(fpr, tpr, lw=2, label=f'{model_name} (AUC = {roc_auc:.3f})')
+
+    # Plot the diagonal line (random classifier)
+    plt.plot([0, 1], [0, 1], color='gray', linestyle='--', lw=2)
+
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curve Comparison' + title + " - Validation Set")
+    plt.legend(loc='lower right')
+    plt.show()
+    
 # Confusion Matrix - Shows Both classes
 def cm(y_true, y_pred, title):
     cm = confusion_matrix(y_true, y_pred)

@@ -13,6 +13,7 @@ import math
 
 
 class KNearestNeighbors:
+    # n_components just checks if > or = to 0. If >0 it will run both N=2 and N=3
     def __init__(self, train_data_path, test_data_path, k: int, graph: bool, n_components: int = 2):
         self.n_components = n_components  # Number of PCA components to keep
         
@@ -43,53 +44,89 @@ class KNearestNeighbors:
         
         if n_components > 0:
             # Apply PCA for dimensionality reduction
-            pca = PCA(n_components=self.n_components)
-            X_pca = pca.fit_transform(X)  # Reduced dimension data
+            
+            ## N = 2
+            pca_2 = PCA(n_components=2)
+            X_pca_2 = pca_2.fit_transform(X)  # Reduced dimension data
         
             # Print explained variance to show how much information is retained
-            print(f"Explained variance by {self.n_components} components: {pca.explained_variance_ratio_}")  
+            print(f"Explained variance by 2 components: {pca_2.explained_variance_ratio_}")  
             print("\nPCA Component Features Mapping:")
-            for i, component in enumerate(pca.components_):
+            for i, component in enumerate(pca_2.components_):
                 print(f"\nComponent {i+1}:")
                 for j, feature in enumerate(X.columns):  # X.columns contains original feature names
                     print(f"  {feature}: {component[j]:.4f}")     
 
-            x_pca_train, x_pca_val, y_pca_train, y_pca_val = train_test_split(X_pca, Y, test_size=0.2, random_state=42)
-            
+            x_pca_train, x_pca_val, y_pca_train, y_pca_val = train_test_split(X_pca_2, Y, test_size=0.2, random_state=42)
             # PCA Predict x_test using x_val
-            y_pca_val_predict = self.predict(x_pca_val, x_pca_train, y_pca_train, True, k)
+            y_pca_val_predict_2 = self.predict(x_pca_val, x_pca_train, y_pca_train, True, k)
             # Print performance
-            print(f'\n{k} Nearest Neighbors Performance:')
+            print(f'\n{k}: N= 2 Nearest Neighbors Performance:')
             # print("Accuracy:", accuracy_score(y_pca_val, y_pca_val_predict))
             print("Classification Report:")
-            print(classification_report(y_pca_val, y_pca_val_predict))
+            print(classification_report(y_pca_val, y_pca_val_predict_2))
+            
+            ## N = 3
+            pca_3 = PCA(n_components=3)
+            X_pca_3 = pca_3.fit_transform(X)  # Reduced dimension data
+        
+            # Print explained variance to show how much information is retained
+            print(f"Explained variance by 3 components: {pca_3.explained_variance_ratio_}")  
+            print("\nPCA Component Features Mapping:")
+            for i, component in enumerate(pca_3.components_):
+                print(f"\nComponent {i+1}:")
+                for j, feature in enumerate(X.columns):  # X.columns contains original feature names
+                    print(f"  {feature}: {component[j]:.4f}")     
+
+            x_pca_3_train, x_pca_3_val, y_pca_3_train, y_pca_3_val = train_test_split(X_pca_3, Y, test_size=0.2, random_state=42)
+            # PCA Predict x_test using x_val
+            y_pca_val_predict_3 = self.predict(x_pca_3_val, x_pca_3_train, y_pca_3_train, True, k)
+            # Print performance
+            print(f'\n{k}: N= 3 Nearest Neighbors Performance:')
+            # print("Accuracy:", accuracy_score(y_pca_val, y_pca_val_predict))
+            print("Classification Report:")
+            print(classification_report(y_pca_3_val, y_pca_val_predict_3))
             
         if graph and k > 0:
             # Visualize - ROC
             vis.roc(y_val, y_val_predict, f' {k}-NN')
-            # Visualize - Confusion Matrix
+            # # Visualize - Confusion Matrix
             vis.cm(y_val, y_val_predict, f' {k}-NN')
             
             if n_components > 0:
+                ## N = 2
                 # Visualize - ROC
-                vis.roc(y_val, y_pca_val_predict, f' {k}-NN {n_components} Component PCA')
+                vis.roc(y_val, y_pca_val_predict_2, f' {k}-NN 2 Component PCA')
                 # Visualize - Confusion Matrix
-                vis.cm(y_val, y_pca_val_predict, f' {k}-NN {n_components} Component PCA')
+                vis.cm(y_val, y_pca_val_predict_2, f' {k}-NN 2 Component PCA')
                 
-                # Component Heatmap
-                self.vis_heatmap_components(f' {n_components}', pca.components_, X.columns)
+                # # Component Heatmap
+                self.vis_heatmap_components(f' 2', pca_2.components_, X.columns)
                 # Component Variance Composition
-                self.vis_pca_variance_composition(pca.explained_variance_ratio_)
+                self.vis_pca_variance_composition(pca_2.explained_variance_ratio_)
                 
-                if n_components == 2:
-                    self.vis_2D_ScatterPlot(f' {k}-NN {n_components} Component PCA', X_pca, Y)
-                elif n_components == 3: 
-                    self.vis_3D_ScatterPlot(f'{k}-NN {n_components} Component PCA', X_pca, Y)
+                self.vis_2D_ScatterPlot(f' {k}-NN 2 Component PCA', X_pca_2, Y)
+                
+                
+                ## N = 3
+                # Visualize - ROC
+                vis.roc(y_val, y_pca_val_predict_3, f' {k}-NN 3 Component PCA')
+                # Visualize - Confusion Matrix
+                vis.cm(y_val, y_pca_val_predict_3, f' {k}-NN 3 Component PCA')
+                
+                # # Component Heatmap
+                self.vis_heatmap_components(f' 3', pca_3.components_, X.columns)
+                # Component Variance Composition
+                self.vis_pca_variance_composition(pca_3.explained_variance_ratio_)
+                
+                self.vis_3D_ScatterPlot(f'{k}-NN 3 Component PCA', X_pca_3, Y)
+                
+                vis.roc_compare(y_val, [y_val_predict, y_pca_val_predict_2, y_pca_val_predict_3], ['N=0', 'N=2', 'N=3'], f'{k}-NN')
                     
         if k == 0:
             err_train = []
             err_val = []
-            k_range = range(1, int(math.sqrt(len(x_train))) + 1, 3)  # Step size of 3
+            k_range = range(1, int(math.sqrt(len(x_train))) + 1, 5)  # Step size of 3
             print(k_range)
             for k in k_range:
                 print(k)

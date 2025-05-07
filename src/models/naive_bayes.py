@@ -89,6 +89,8 @@ class NaiveBayes:
             # Heatmap
             vis.visualize_heatmap(y_attribute_means, "Mean")
             vis.visualize_heatmap(y_attribute_variances, "Variance")
+            
+            vis.roc_compare(y_test, [y_pred_ln, y_pred_gaussian_ln], ['Multinomial', 'Gaussian'], " Naive Bayes")
         # vis.visualize_feature_influence(y_attribute_probs, attributes, labels)
         # vis.visualize_stacked_feature_contributions(y_attribute_probs, attributes, labels)
         

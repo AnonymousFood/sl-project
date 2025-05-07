@@ -40,8 +40,11 @@ submission_df4.to_csv("random_forest_predictions.csv", index=False)
 print("\nPredictions saved to 'decision_tree_predictions.csv' and 'random_forest_predictions.csv'")
 
 # Run Naive Bayes Predictions - False means no graphing
-# NB = nb.NaiveBayes(train_path, test_path, False)
+NB = nb.NaiveBayes(train_path, test_path, True)
 
-# Run K-Nearest Neighbors Predictions - False means no graphing
-# knn_7 = kn.KNearestNeighbors(train_path, test_path, 7, True, 0)
-
+# Run K-Nearest Neighbors Predictions - False means no graphing - last number 0: no PCA, > 0: 2 and 3 PCA
+## Find what K is best (less validation loss)
+# knn_find_K = kn.KNearestNeighbors(train_path, test_path, 0, False, 0)
+    # For 3 step intervals got 22, for 5 step intervals got 21
+## Get specific data on K = 22 for N = 0,2,3
+# knn_22_pca = kn.KNearestNeighbors(train_path, test_path, 22, True, 1)
